@@ -1,0 +1,23 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "R_Guide_notes"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Accueil
+      - about.qmd
+
+format:
+  html:
+    theme: 
+      dark: cyborg
+      light: lux
+    highlight-style: espresso
+    css: styles.css
+    toc: true
+
+editor: visual
+lang: fr-FR
