@@ -1,11 +1,21 @@
 ---
-title: "R_Guide_notes"
+title: ""
 ---
 
-This is a Quarto website.
+## Bienvenue
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+Ces pages sont le résumé des notes prises en explorant l’excellent ouvrage de Joseph Larmarange `R-guide`. Pour accéder à l'original[^1], il suffit de cliquer sur son nom ci-dessus.
 
-```{r}
-1 + 1
-```
+[^1]: l'original est toujours mieux que n'importe quelle copie !
+
+## Licence
+
+Ce document est mis à disposition selon les mêmes termes que le document original [CC BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr) :
+
+-   CC : Creative commons
+
+-   BY : Attribution, c'est à dire que vous devez citer Joseph LARMARANGE si vous publiez un ou des extraits de son travail
+
+-   NC : Non Commercial, c'est à dire que vous n'avez pas le droit de vendre ces publications
+
+-   SA : Share sAme conditions, c'est à dire que vous devez publier votre travail sous ces mêmes conditions.

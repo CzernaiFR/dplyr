@@ -1,0 +1,405 @@
+---
+title: "`dplyr`"
+---
+
+[`dplyr`](https://larmarange.github.io/guide-R/manipulation/dplyr.html) facilite le traitement et la manipulation des tableaux de données (qu’il s’agisse de *data frame* ou de *tibble*). Il propose une syntaxe claire et cohérente, sous formes de verbes correspondant à des fonctions.
+
+Les verbes de [dplyr](https://dplyr.tidyverse.org/) prennent en entrée un tableau de données (*data frame* ou *tibble*) et renvoient systématiquement un *tibble*.
+
+Charger le package :
+
+```{r}
+library(dplyr, warn.conflicts = FALSE)
+```
+
+Charger le jeu de données `nycflights13`, données de tous les vols au départ des aéroports de New-York en $2013$, répartis en $3$ tables[^1] :
+
+[^1]: ou jeux de données — à partir d'ici, je n'utiliserai plus que « table ».
+
+-   [`nycflights13::flights`](https://rdrr.io/pkg/nycflights13/man/flights.html) contient des informations sur les vols : date, départ, destination, horaires, retard…
+
+-   [`nycflights13::airports`](https://rdrr.io/pkg/nycflights13/man/airports.html) contient des informations sur les aéroports
+
+-   [`nycflights13::airlines`](https://rdrr.io/pkg/nycflights13/man/airlines.html) contient des données sur les compagnies aériennes
+
+Charger le package :
+
+```{r}
+library(nycflights13)
+```
+
+Charger les tables :
+
+```{r}
+data(flights)
+data(airports)
+data(airlines)
+```
+
+## Opérations sur les lignes
+
+### `filter()`
+
+`filter()` des lignes d'une table selon une condition passée en paramètre.
+
+Seules les lignes pour lesquelles le test renvoie `TRUE` sont renvoyées[^2].
+
+[^2]: une ligne pour laquelle le test renvoie `FALSE` (faux) ou `NA`, d'est à dire `non avable` (valeur manquante) sera ignorée, donc pas renvoyée
+
+Sélection des vols du mois de janvier[^3] :
+
+[^3]: variable `month`
+
+```{r}
+filter(flights, month == 1)
+```
+
+Ou plus simplement avec un `pipe` :
+
+```{r}
+flights |> 
+  filter(month == 1)
+```
+
+Sélectionner les vols avec un retard au départ[^4] entre 10 et 15 minutes :
+
+[^4]: variable `dep_delay`
+
+```{r}
+flights |> 
+  filter(dep_delay >= 10 & dep_delay <= 15)
+```
+
+Tester avec une fonction. Les vols avec la plus grande distance :
+
+```{r}
+flights |> 
+  filter(distance == max(distance))
+```
+
+::: callout-important
+## Évaluation contextuelle
+
+[dplyr](https://dplyr.tidyverse.org/) procède à une évaluation contextuelle des expressions qui lui sont passées. Ainsi, on peut indiquer directement le nom d’une variable et [dplyr](https://dplyr.tidyverse.org/) l’interprétera dans le contexte du tableau de données, c’est-à-dire regardera s’il existe une colonne portant ce nom dans le tableau.
+
+Dans l’expression `flights |> filter(month == 1)`, `month` est interprété comme la colonne *month* du tableau `flights`, à savoir `flights$month`.
+
+Il est également possible d’indiquer des objets extérieurs au tableau :
+
+```{r}
+m <- 2
+flights |> 
+  filter(month == m)
+```
+
+Celà fonctionne parce qu'il n'y a pas de colonne `m` dans la table. Donc `dplyr` cherche une variable `m` dans l'environnement de travail.
+:::
+
+### `slice()`
+
+[SOURCE](https://larmarange.github.io/guide-R/manipulation/dplyr.html#slice)
+
+Le verbe [`dplyr::slice()`](https://dplyr.tidyverse.org/reference/slice.html) sélectionne des lignes du tableau selon leur position.
+
+La $345^{ème}$ ligne du tableau `airports` :
+
+```{r}
+airports |> 
+  slice(345)
+```
+
+Plusieurs lignes :
+
+```{r}
+airports |> 
+  slice(3:5)
+```
+
+### `arrange()`
+
+[`dplyr::arrange()`](https://dplyr.tidyverse.org/reference/arrange.html) réordonne les lignes d’un tableau selon une ou plusieurs colonnes.
+
+Trier `flighs` selon le retard au départ[^5] en ordre croissant :
+
+[^5]: colonne (variable) `dep_delay`
+
+```{r}
+flights |> 
+  arrange(dep_delay)
+```
+
+Trier selon plusieurs colonnes :
+
+```{r}
+flights |> 
+  arrange(month, dep_delay)
+```
+
+Et même :
+
+```{r}
+flights |> 
+  arrange(month, desc(dep_delay))
+```
+
+Là, `month` est en ordre ascendant et `dep_delay` en ordre descendant.
+
+Combiné [`dplyr::slice()`](https://dplyr.tidyverse.org/reference/slice.html) et [`dplyr::arrange()`](https://dplyr.tidyverse.org/reference/arrange.html) pour, entre autres, trouver les 3 vols ayant eu le plus de retard :
+
+```{r}
+flights |> 
+  arrange(desc(dep_delay)) |> 
+  slice(1:3)
+```
+
+### `slice_sample()`
+
+[`dplyr::slice_sample()`](https://dplyr.tidyverse.org/reference/slice.html) permet de sélectionner *aléatoirement* un certain nombres de lignes ou un pourcentage de lignes :
+
+```{r}
+flights |> 
+  slice_sample(n = 3)
+```
+
+ou pour trouver $2.3\,\%$ des lignes :
+
+```{r}
+flights |> 
+  slice_sample(prop = 0.023)
+```
+
+::: callout-note
+Pour demander un *pourcentage* à `R`, il faut lui passer un nombre rationnel, entre $0.000$ et $1.000$. $5\,\%$ s'écrit $\frac{5}{100} = 0.05$
+:::
+
+::: callout-important
+Pour avoir des résultats reproductibles et dans le temps et sur différentes machines, il ***FAUT*** utiliser `set.seed()`.
+
+Sans entrer trop dans les détails[^6], les programmes génèrent des nombres *pseudo-*aléatoires. Un ordinateur ne sait faire ***que*** des calculs. Pour choisir un nombre au *hasard*, il fait un calcul du genre $f(x)$, où $x$ et le nombre affiché par un compteur interne à l'ordinateur qui change de valeur chaque millième de seconde. N'importe quel programme peut accéder et changer la valeur de ce compteur.
+
+Tout ça pour dire qu'on ne peut pas, jamais faire confiance à l'aléatoire d'un ordinateur. Et `set.seed()` ?
+
+Exemple :
+
+```{r}
+sample(letters, 3)
+sample(letters, 3)
+sample(letters, 3)
+```
+
+À comparer à :
+
+```{r}
+set.seed(123)
+sample(letters, 3)
+set.seed(123)
+sample(letters, 3)
+set.seed(123)
+sample(letters, 3)
+```
+
+Le programme choisit toujours des lettres au hasard. Mais chaque séquence produit le même résultat.
+
+`slice_sample()` sert à choisir un extrait d'une table pour faire des essais. Si les extraits successifs ne sont pas les mêmes, les résultats des essais seront biaisés et, surtout, incohérents. En utilisant `set.seed()`[^7]. En définissant une même semence avant chaque génération aléatoire, on aura toujours la même séquence aléatoire. Et sur touts les machines du monde.
+:::
+
+[^6]: quoique j'y suis peut-être déjà !
+
+[^7]: à noter pour les anglophobes : seed veut dire semence
+
+### `distinct()`
+
+[`dplyr::distinct()`](https://dplyr.tidyverse.org/reference/distinct.html) renvoie un tableau sans lignes en double.
+
+```{r}
+flights |> 
+  select(day, month) |>
+  distinct()
+```
+
+On peut lui spécifier une liste de variables : dans ce cas, pour toutes les observations ayant des valeurs identiques pour les variables en question, `distinct()` ne conservera que la première d’entre elles.
+
+```{r}
+flights |> 
+  distinct(month, day)
+```
+
+L'option `.keep_all` renvoie toutes les colonnes du tableau :
+
+```{r}
+flights |> 
+  distinct(month, day, .keep_all = TRUE)
+```
+
+## Opérations sur les colonnes
+
+[Source](https://larmarange.github.io/guide-R/manipulation/dplyr.html#op%C3%A9rations-sur-les-colonnes)
+
+### `select()`
+
+[`dplyr::select()`](https://dplyr.tidyverse.org/reference/select.html) permet de sélectionner des colonnes d’un tableau de données. Extraire les colonnes `lat` et `lon` du tableau `airports` :
+
+```{r}
+airports |> 
+  select(lat, lon)
+```
+
+Précéder le nom de la colonne d'un `-` élimine la colonne de la sélection :
+
+```{r}
+airports |> 
+  select(-lat, -lon)
+```
+
+[`dplyr::select()`](https://dplyr.tidyverse.org/reference/select.html) comprend une série de fonctions facilitant la sélection de multiples colonnes. Par exemple, [`dplyr::starts_with()`](https://tidyselect.r-lib.org/reference/starts_with.html), [`dplyr::contains()`](https://tidyselect.r-lib.org/reference/starts_with.html) ou [`dplyr::matches()`](https://tidyselect.r-lib.org/reference/starts_with.html) permettent d’exprimer des conditions sur les noms de variables :
+
+```{r}
+flights |> 
+  select(starts_with("dep_"))
+```
+
+`colonneA:colonneZ` permet de sélectionner toutes les colonnes entre `colonneA` et `colonneZ`, ces deux colonnes incluses :
+
+```{r}
+flights |> 
+  select(year:day)
+```
+
+[`dplyr::all_of()`](https://tidyselect.r-lib.org/reference/all_of.html) et [`dplyr::any_of()`](https://tidyselect.r-lib.org/reference/all_of.html) permettent de fournir une liste de variables à extraire sous forme de vecteur textuel. Alors que [`dplyr::all_of()`](https://tidyselect.r-lib.org/reference/all_of.html) renverra une erreur si une variable n’est pas trouvée dans le tableau de départ, [`dplyr::any_of()`](https://tidyselect.r-lib.org/reference/all_of.html) sera moins stricte.
+
+```{r}
+flights |> 
+  select(all_of(c("year", "month", "day")))
+```
+
+[`dplyr::where()`](https://tidyselect.r-lib.org/reference/where.html) permets de sélectionner des variables à partir d’une fonction qui renvoie une valeur logique. Par exemple, pour sélectionner seulement les variables textuelles :
+
+```{r}
+flights |> 
+  select(where(is.character))
+```
+
+[`dplyr::select()`](https://dplyr.tidyverse.org/reference/select.html) peut être utilisée pour réordonner les colonnes d’une table en utilisant la fonction [`dplyr::everything()`](https://tidyselect.r-lib.org/reference/everything.html), qui sélectionne l’ensemble des colonnes non encore sélectionnées. Ainsi, si l’on souhaite faire passer la colonne `name` en première position de la table `airports`, on peut faire :
+
+```{r}
+airports |> 
+  select(name, everything())
+```
+
+### `relocate()`
+
+Pour réordonner des colonnes, on pourra aussi avoir recours à [`dplyr::relocate()`](https://dplyr.tidyverse.org/reference/relocate.html) en indiquant les premières variables. Il n’est pas nécessaire d’ajouter `everything()` car avec [`dplyr::relocate()`](https://dplyr.tidyverse.org/reference/relocate.html) toutes les variables sont conservées.
+
+```{r}
+airports |> 
+  relocate(lon, lat, name)
+```
+
+### `rename()`
+
+Une variante de [`dplyr::select()`](https://dplyr.tidyverse.org/reference/select.html) est [`dplyr::rename()`](https://dplyr.tidyverse.org/reference/rename.html), qui permet de renommer facilement des colonnes. On l’utilise en lui passant des paramètres de la forme `nouveau_nom = ancien_nom`. Ainsi, si on veut renommer les colonnes `lon` et `lat` de `airports` en `longitude` et `latitude` :
+
+```{r}
+airports |> 
+  rename(longitude = lon, latitude = lat)
+```
+
+### `pull()`
+
+La fonction [`dplyr::pull()`](https://dplyr.tidyverse.org/reference/pull.html) permet d’accéder au contenu d’une variable. C’est un équivalent aux opérateurs `$` ou `[[]]`. On peut lui passer un nom de variable ou bien sa position.
+
+```{r}
+airports |> 
+  pull(alt) |> 
+  mean()
+```
+
+### `mutate()`
+
+[Source](https://larmarange.github.io/guide-R/manipulation/dplyr.html#mutate)
+
+[`dplyr::mutate()`](https://dplyr.tidyverse.org/reference/mutate.html) permet de créer de nouvelles colonnes dans le tableau de données, en général à partir de variables existantes.
+
+Par exemple, la table `airports` contient l’altitude de l’aéroport en pieds. Si l’on veut créer une nouvelle variable `alt_m` avec l’altitude en mètres, on peut faire :
+
+```{r}
+airports <- 
+  airports |> 
+  mutate(alt_m = alt / 3.2808)
+airports
+```
+
+On peut créer plusieurs nouvelles colonnes en une seule fois, et les expressions successives peuvent prendre en compte les résultats des calculs précédents. L’exemple suivant convertit d’abord la distance en kilomètres dans une variable *distance_km*, puis utilise cette nouvelle colonne pour calculer la vitesse en km/h.
+
+```{r}
+flights <- 
+  flights |> 
+  mutate(
+    distance_km = distance / 0.62137,
+    vitesse_kmh = distance_km / air_time * 60
+  )
+flights
+```
+
+## Opérations groupées
+
+### `group_by()`
+
+Un élément très important de [dplyr](https://dplyr.tidyverse.org/) est la fonction [`dplyr::group_by()`](https://dplyr.tidyverse.org/reference/group_by.html). Elle permet de définir des groupes de lignes à partir des valeurs d’une ou plusieurs colonnes. Par exemple, on peut grouper les vols selon leur mois :
+
+```{r}
+flights |> 
+  group_by(month)
+```
+
+Par défaut ceci ne fait rien de visible, à part l’apparition d’une mention `Groups` dans l’affichage du résultat. Mais à partir du moment où des groupes ont été définis, les verbes comme [`dplyr::slice()`](https://dplyr.tidyverse.org/reference/slice.html) ou [`dplyr::mutate()`](https://dplyr.tidyverse.org/reference/mutate.html) vont en tenir compte lors de leurs opérations.
+
+Par exemple, si on applique [`dplyr::slice()`](https://dplyr.tidyverse.org/reference/slice.html) à un tableau préalablement groupé, il va sélectionner les lignes aux positions indiquées *pour chaque groupe*. Ainsi la commande suivante affiche le premier vol de chaque mois, selon leur ordre d’apparition dans le tableau :
+
+```{r}
+flights |> 
+  group_by(month) |> 
+  slice(1)
+```
+
+Idem pour [`dplyr::mutate()`](https://dplyr.tidyverse.org/reference/mutate.html) : les opérations appliquées lors du calcul des valeurs des nouvelles colonnes sont appliquée groupe de lignes par groupe de lignes. Dans l’exemple suivant, on ajoute une nouvelle colonne qui contient le retard moyen *du mois correspondant* :
+
+```{r}
+flights |> 
+  group_by(month) |> 
+  mutate(mean_delay_month = mean(dep_delay, na.rm = TRUE)) |> 
+  relocate(mean_delay_month) |> 
+  slice(1)
+```
+
+Ceci peut permettre, par exemple, de déterminer si un retard donné est supérieur ou inférieur au retard moyen du mois en cours.
+
+[`dplyr::group_by()`](https://dplyr.tidyverse.org/reference/group_by.html) peut aussi être utile avec [`dplyr::filter()`](https://dplyr.tidyverse.org/reference/filter.html), par exemple pour sélectionner les vols avec le retard au départ le plus important *pour chaque mois* :
+
+```{r}
+flights |> 
+  group_by(month) |> 
+  filter(dep_delay == max(dep_delay, na.rm = TRUE))
+```
+
+::: callout-warning
+La clause `dplyr::group_by()` marche pour les verbes déjà vus précédemment, *sauf* pour [`dplyr::arrange()`](https://dplyr.tidyverse.org/reference/arrange.html), qui par défaut trie la table sans tenir compte des groupes. Pour obtenir un tri par groupe, il faut lui ajouter l’argument .by_group = TRUE.
+
+On peut voir la différence en comparant les deux résultats suivants :
+
+```{r}
+flights |> 
+  group_by(month) |> 
+  arrange(desc(dep_delay)) |> 
+  relocate(dep_delay)
+
+flights |> 
+  group_by(month) |> 
+  arrange(desc(dep_delay), .by_group = TRUE) |> 
+  relocate(dep_delay)
+```
+:::
+
+### `summarise()`
+
+[Source](https://larmarange.github.io/guide-R/manipulation/dplyr.html#summarise)

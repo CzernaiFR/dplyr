@@ -2,22 +2,44 @@ project:
   type: website
   output-dir: docs
 
+  
+author: 
+  - name: Joseph LARMARANGE
+    url: https://larmarange.github.io/guide-R/
+  - name: Roger MARTIN
+    email: Roger57que@free.fr
+
 website:
   title: "R_Guide_notes"
   navbar:
     left:
       - href: index.qmd
         text: Accueil
-      - about.qmd
+      - 005_dplyr.qmd
 
 format:
   html:
+    html-math-method: katex
+    code-annotations: true
+    code-line-numbers: true
+    number-sections: true
+    number-depth: 3
     theme: 
       dark: cyborg
       light: lux
     highlight-style: espresso
     css: styles.css
     toc: true
+    grid: 
+      sidebar-width: 2px
+      body-width: 1000px
+      margin-width: 250px
+      gutter-width: 1.0em
+    fontsize: 1.1em
+    reference-location: margin
 
-editor: visual
+editor: source
 lang: fr-FR
+date: 2024-04-29
+date-modified: last-modified
+date-format: ddd DD MMM YYYY
