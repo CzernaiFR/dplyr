@@ -1,0 +1,113 @@
+---
+title: "Le `pipe`"
+---
+
+[Source](https://larmarange.github.io/guide-R/manipulation/pipe.html)
+
+Il est fréquent d’enchaîner des opérations en appelant successivement des fonctions sur le résultat de l’appel précédent.
+
+Prenons un exemple. Supposons que nous ayons un vecteur numérique `v` dont nous voulons calculer la moyenne puis l’afficher via un message dans la console. Pour un meilleur rendu, nous allons arrondir la moyenne à une décimale, mettre en forme le résultat à la française, c’est-à-dire avec la virgule comme séparateur des décimales, créer une phrase avec le résultat, puis l’afficher dans la console. Voici le code correspondant, étape par étape.
+
+```{r}
+v <- c(1.2, 8.7, 5.6, 11.4)
+m <- mean(v)
+r <- round(m, digits = 1)
+f <- format(r, decimal.mark = ",")
+p <- paste0("La moyenne est de ", f, ".")
+message(p)
+```
+
+Cette écriture, n’est pas vraiment optimale, car cela entraîne la création d’un grand nombre de variables intermédiaires totalement inutiles. Nous pourrions dès lors imbriquer les différentes fonctions les unes dans les autres :
+
+```{r}
+message(paste0("La moyenne est de ", format(round(mean(v), digits = 1), decimal.mark = ","), "."))
+```
+
+Nous obtenons bien le même résultat, mais la lecture de cette ligne de code est assez difficile et il n’est pas aisé de bien identifier à quelle fonction est rattaché chaque argument.
+
+Une amélioration possible serait d’effectuer des retours à la ligne avec une indentation adéquate pour rendre cela plus lisible.
+
+```{r}
+message(
+  paste0(
+    "La moyenne est de ", 
+    format(
+      round(
+        mean(v), 
+        digits = 1), 
+      decimal.mark = ","
+    ),
+    "."
+  )
+)
+```
+
+C’est déjà mieux, mais toujours pas optimal.
+
+## Le `pipe` natif de `R` `|>`
+
+Depuis la version 4.1, **R** a introduit ce que l’on nomme un *pipe* (tuyau en anglais), un nouvel opérateur noté `|>`.
+
+Le principe de cet opérateur est de passer l’élément situé à sa gauche comme premier argument de la fonction située à sa droite. Ainsi, l’écriture `x |> f()` est équivalente à `f(x)` et l’écriture `x |> f(y)` à `f(x, y)`.
+
+Parfois, on souhaite passer l’objet **x** à un autre endroit de la fonction `f()` que le premier argument. Depuis la version 4.2, **R** a introduit l’opérateur `_`,que l’on nomme un *placeholder*, pour indiquer où passer l’objet de gauche. Ainsi, `x |> f(y, a = _)` devient équivalent à `f(y, a = x)`. **ATTENTION :** le *placeholder* doit impérativement être transmis à un argument nommé !
+
+Tout cela semble encore un peu abstrait ? Reprenons notre exemple précédent et réécrivons le code avec le *pipe*.
+
+```{r}
+v |> 
+  mean() |> 
+  round(digits = 1) |> 
+  format(decimal.mark = ",") |> 
+  paste0("La moyenne est de ", m = _, ".")
+```
+
+Le code n’est-il pas plus lisible ?
+
+## **Accéder à un élément avec `purrr::pluck()` et `purrr::chuck()`**
+
+Il est fréquent d’avoir besoin d’accéder à un élément précis d’une liste, d’un tableau ou d’un vecteur, ce que l’on fait d’ordinaire avec la syntaxe `[[]]` ou `$` pour les listes ou `[]` pour les vecteurs. Cependant, cette syntaxe se combine souvent mal avec un enchaînement d’opérations utilisant le *pipe*.
+
+Le package [purrr](https://purrr.tidyverse.org/), chargé par défaut avec [`library(tidyverse)`](https://tidyverse.tidyverse.org/), fournit une fonction [`purrr::pluck()`](https://purrr.tidyverse.org/reference/pluck.html) qui, est l’équivalent de `[[]]`, et qui permet de récupérer un élément par son nom ou sa position. Ainsi, si l’on considère le tableau de données `iris`, `pluck(iris, "Petal.Witdh")` est équivalent à `iris$Petal.Width`. Voyons un exemple d’utilisation dans le cadre d’un enchaînement d’opérations.
+
+```{r}
+library(tidyverse, quietly = TRUE)
+```
+
+```{r}
+iris |> 
+  pluck("Petal.Width") |> 
+  mean()
+```
+
+Équivalent à :
+
+```{r}
+mean(iris$Petal.Width)
+```
+
+[`purrr::pluck()`](https://purrr.tidyverse.org/reference/pluck.html) fonctionne également sur des vecteurs (et dans ce cas opère comme `[]`).
+
+```{r}
+v <- c("a", "b", "c", "d")
+v |> pluck(2)
+```
+
+On peut également, dans un même appel à [`purrr::pluck()`](https://purrr.tidyverse.org/reference/pluck.html), enchaîner plusieurs niveaux. Les trois syntaxes ci-après sont ainsi équivalents :
+
+```{r}
+iris |> 
+  purrr::pluck("Sepal.Width", 3)
+iris |> 
+  purrr::pluck("Sepal.Width") |> 
+  purrr::pluck(3)
+iris[["Sepal.Width"]][3]
+```
+
+Si l’on demande un élément qui n’existe pas, `purrr:pluck()` renverra l’élement vide (`NULL`). Si l’on souhaite plutôt que cela génère une erreur, on aura alors recours à [`purrr::chuck()`](https://purrr.tidyverse.org/reference/chuck.html).
+
+```{r}
+#| error: true
+iris |> pluck("inconnu")
+iris |> chuck("inconnu")
+```

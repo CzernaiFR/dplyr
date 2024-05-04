@@ -174,6 +174,10 @@ window.Quarto = {
 <span class="menu-text">Accueil</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="./002_pipe.html"> 
+<span class="menu-text">Le <code>pipe</code></span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link active" href="./005_dplyr.html" aria-current="page"> 
 <span class="menu-text"><code>dplyr</code></span></a>
   </li>  
@@ -214,7 +218,11 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#group_by" id="toc-group_by" class="nav-link" data-scroll-target="#group_by"><span class="header-section-number">3.1</span> <code>group_by()</code></a></li>
   <li><a href="#summarise" id="toc-summarise" class="nav-link" data-scroll-target="#summarise"><span class="header-section-number">3.2</span> <code>summarise()</code></a></li>
+  <li><a href="#count" id="toc-count" class="nav-link" data-scroll-target="#count"><span class="header-section-number">3.3</span> <code>count()</code></a></li>
+  <li><a href="#grouper-selon-plusieurs-variables" id="toc-grouper-selon-plusieurs-variables" class="nav-link" data-scroll-target="#grouper-selon-plusieurs-variables"><span class="header-section-number">3.4</span> Grouper selon plusieurs variables</a></li>
   </ul></li>
+  <li><a href="#cheatsheet" id="toc-cheatsheet" class="nav-link" data-scroll-target="#cheatsheet"><span class="header-section-number">4</span> Cheatsheet</a></li>
+  <li><a href="#webin-r" id="toc-webin-r" class="nav-link" data-scroll-target="#webin-r"><span class="header-section-number">5</span> webin-R</a></li>
   </ul>
 </nav>
     </div>
@@ -248,7 +256,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Modifié</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">mer. 01 mai 2024</p>
+      <p class="date-modified">ven. 3 mai 2024</p>
     </div>
   </div>
     
@@ -556,9 +564,9 @@ window.Quarto = {
 <pre><code># A tibble: 3 × 19
    year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
-1  2013     3     9     2046           2015        31      105            111
-2  2013    10    31     1905           1915       -10     2051           2116
-3  2013     9    14     1754           1800        -6     2027           2053
+1  2013     8     8      753            755        -2     1025           1009
+2  2013     3     4      600            605        -5      749            817
+3  2013     5    25     1857           1900        -3     2126           2159
 # ℹ 11 more variables: arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;,
 #   tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;,
 #   hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
@@ -572,16 +580,16 @@ window.Quarto = {
 <pre><code># A tibble: 7,745 × 19
     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
- 1  2013     5     1     2130           2127         3        4           2337
- 2  2013     7    12      745            752        -7      906            913
- 3  2013     4    23     1113            959        74     1340           1200
- 4  2013     5     9      931            925         6     1222           1240
- 5  2013    11    25      924            930        -6     1214           1221
- 6  2013    10    30     1259           1300        -1     1613           1605
- 7  2013     6    14     1335           1340        -5     1723           1700
- 8  2013     5    23     1559           1430        89     1856           1601
- 9  2013    11    28      817            820        -3     1132           1153
-10  2013     8     8     1007           1015        -8     1203           1209
+ 1  2013     7    29     1452           1450         2     1631           1634
+ 2  2013    11    11      849            850        -1     1116           1132
+ 3  2013     9     3      655            659        -4      913           1000
+ 4  2013     3    14      754            800        -6     1121           1116
+ 5  2013    10     8     1019           1029       -10     1147           1214
+ 6  2013     5    22      852            900        -8     1121           1126
+ 7  2013     2    27     1449           1355        54     1719           1634
+ 8  2013     2    19     1609           1600         9     1959           1930
+ 9  2013    11     6     1755           1800        -5     1913           1919
+10  2013     5    10      741            744        -3     1025           1045
 # ℹ 7,735 more rows
 # ℹ 11 more variables: arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;,
 #   tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;,
@@ -618,15 +626,15 @@ Important
 <div class="cell">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="fu">sample</span>(letters, <span class="dv">3</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "h" "l" "x"</code></pre>
+<pre><code>[1] "d" "u" "g"</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="fu">sample</span>(letters, <span class="dv">3</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "y" "w" "o"</code></pre>
+<pre><code>[1] "y" "g" "t"</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a><span class="fu">sample</span>(letters, <span class="dv">3</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "i" "v" "s"</code></pre>
+<pre><code>[1] "s" "y" "c"</code></pre>
 </div>
 </div>
 <p>À comparer à&nbsp;:</p>
@@ -995,7 +1003,7 @@ Important
 </div>
 </section>
 </section>
-<section id="opérations-groupées" class="level2" data-number="3">
+<section id="opérations-groupées" class="level2 page-columns page-full" data-number="3">
 <h2 data-number="3" class="anchored" data-anchor-id="opérations-groupées"><span class="header-section-number">3</span> Opérations groupées</h2>
 <section id="group_by" class="level3" data-number="3.1">
 <h3 data-number="3.1" class="anchored" data-anchor-id="group_by"><span class="header-section-number">3.1</span> <code>group_by()</code></h3>
@@ -1183,9 +1191,355 @@ Avertissement
 <section id="summarise" class="level3" data-number="3.2">
 <h3 data-number="3.2" class="anchored" data-anchor-id="summarise"><span class="header-section-number">3.2</span> <code>summarise()</code></h3>
 <p><a href="https://larmarange.github.io/guide-R/manipulation/dplyr.html#summarise">Source</a></p>
-
-
+<p><a href="https://dplyr.tidyverse.org/reference/summarise.html"><code>dplyr::summarise()</code></a> permet d’agréger les lignes du tableau en effectuant une opération résumée sur une ou plusieurs colonnes. Il s’agit de toutes les fonctions qui prennent en entrée un ensemble de valeurs et renvoie une valeur unique, comme la moyenne (<a href="https://rdrr.io/r/base/mean.html"><code>mean()</code></a>). Par exemple, si l’on souhaite connaître les retards moyens au départ et à l’arrivée pour l’ensemble des vols du tableau <code>flights</code>&nbsp;:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1"></a>flights <span class="sc">|&gt;</span> </span>
+<span id="cb84-2"><a href="#cb84-2"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb84-3"><a href="#cb84-3"></a>    <span class="at">retard_dep =</span> <span class="fu">mean</span>(dep_delay, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb84-4"><a href="#cb84-4"></a>    <span class="at">retard_arr =</span> <span class="fu">mean</span>(arr_delay, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb84-5"><a href="#cb84-5"></a>  )</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 2
+  retard_dep retard_arr
+       &lt;dbl&gt;      &lt;dbl&gt;
+1       12.6       6.90</code></pre>
+</div>
+</div>
+<p>Cette fonction est en général utilisée avec <a href="https://dplyr.tidyverse.org/reference/group_by.html"><code>dplyr::group_by()</code></a>, puisqu’elle permet du coup d’agréger et de résumer les lignes du tableau groupe par groupe. Si l’on souhaite calculer le délai maximum, le délai minimum et le délai moyen au départ pour chaque mois, on pourra faire&nbsp;:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1"></a>flights <span class="sc">|&gt;</span> </span>
+<span id="cb86-2"><a href="#cb86-2"></a>  <span class="fu">group_by</span>(month) <span class="sc">|&gt;</span> </span>
+<span id="cb86-3"><a href="#cb86-3"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb86-4"><a href="#cb86-4"></a>    <span class="at">max_delay =</span> <span class="fu">max</span>(dep_delay, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb86-5"><a href="#cb86-5"></a>    <span class="at">min_delay =</span> <span class="fu">min</span>(dep_delay, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb86-6"><a href="#cb86-6"></a>    <span class="at">mean_delay =</span> <span class="fu">mean</span>(dep_delay, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb86-7"><a href="#cb86-7"></a>  )</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 12 × 4
+   month max_delay min_delay mean_delay
+   &lt;int&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
+ 1     1      1301       -30      10.0 
+ 2     2       853       -33      10.8 
+ 3     3       911       -25      13.2 
+ 4     4       960       -21      13.9 
+ 5     5       878       -24      13.0 
+ 6     6      1137       -21      20.8 
+ 7     7      1005       -22      21.7 
+ 8     8       520       -26      12.6 
+ 9     9      1014       -24       6.72
+10    10       702       -25       6.24
+11    11       798       -32       5.44
+12    12       896       -43      16.6 </code></pre>
+</div>
+</div>
+<p><a href="https://dplyr.tidyverse.org/reference/summarise.html"><code>dplyr::summarise()</code></a> dispose d’une fonction spéciale <a href="https://dplyr.tidyverse.org/reference/context.html"><code>dplyr::n()</code></a>, qui retourne le nombre de lignes du groupe. Ainsi si l’on veut le nombre de vols par destination, on peut utiliser&nbsp;:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1"></a>flights <span class="sc">|&gt;</span> </span>
+<span id="cb88-2"><a href="#cb88-2"></a>  <span class="fu">group_by</span>(dest) <span class="sc">|&gt;</span> </span>
+<span id="cb88-3"><a href="#cb88-3"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>())</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 105 × 2
+   dest      n
+   &lt;chr&gt; &lt;int&gt;
+ 1 ABQ     254
+ 2 ACK     265
+ 3 ALB     439
+ 4 ANC       8
+ 5 ATL   17215
+ 6 AUS    2439
+ 7 AVL     275
+ 8 BDL     443
+ 9 BGR     375
+10 BHM     297
+# ℹ 95 more rows</code></pre>
+</div>
+</div>
+<p>Essai</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1"></a>flights <span class="sc">|&gt;</span> </span>
+<span id="cb90-2"><a href="#cb90-2"></a>  <span class="fu">group_by</span>(month, dest) <span class="sc">|&gt;</span> </span>
+<span id="cb90-3"><a href="#cb90-3"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>())</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'month'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,113 × 3
+# Groups:   month [12]
+   month dest      n
+   &lt;int&gt; &lt;chr&gt; &lt;int&gt;
+ 1     1 ALB      64
+ 2     1 ATL    1396
+ 3     1 AUS     169
+ 4     1 AVL       2
+ 5     1 BDL      37
+ 6     1 BHM      25
+ 7     1 BNA     399
+ 8     1 BOS    1245
+ 9     1 BQN      93
+10     1 BTV     223
+# ℹ 1,103 more rows</code></pre>
+</div>
+</div>
+<p><a href="https://dplyr.tidyverse.org/reference/context.html"><code>dplyr::n()</code></a> peut aussi être utilisée avec <a href="https://dplyr.tidyverse.org/reference/filter.html"><code>dplyr::filter()</code></a> et <a href="https://dplyr.tidyverse.org/reference/mutate.html"><code>dplyr::mutate()</code></a>.</p>
 </section>
+<section id="count" class="level3" data-number="3.3">
+<h3 data-number="3.3" class="anchored" data-anchor-id="count"><span class="header-section-number">3.3</span> <code>count()</code></h3>
+<p>À noter que quand l’on veut compter le nombre de lignes par groupe, on peut utiliser directement la fonction <a href="https://dplyr.tidyverse.org/reference/count.html"><code>dplyr::count()</code></a>. Ainsi le code suivant est identique au précédent&nbsp;:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1"></a>flights <span class="sc">|&gt;</span> </span>
+<span id="cb93-2"><a href="#cb93-2"></a>  <span class="fu">count</span>(dest)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 105 × 2
+   dest      n
+   &lt;chr&gt; &lt;int&gt;
+ 1 ABQ     254
+ 2 ACK     265
+ 3 ALB     439
+ 4 ANC       8
+ 5 ATL   17215
+ 6 AUS    2439
+ 7 AVL     275
+ 8 BDL     443
+ 9 BGR     375
+10 BHM     297
+# ℹ 95 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="grouper-selon-plusieurs-variables" class="level3 page-columns page-full" data-number="3.4">
+<h3 data-number="3.4" class="anchored" data-anchor-id="grouper-selon-plusieurs-variables"><span class="header-section-number">3.4</span> Grouper selon plusieurs variables</h3>
+<p><a href="https://larmarange.github.io/guide-R/manipulation/dplyr.html#grouper-selon-plusieurs-variables">Source</a></p>
+<p>On peut grouper selon plusieurs variables à la fois, il suffit de les indiquer dans la clause du <a href="https://dplyr.tidyverse.org/reference/group_by.html"><code>dplyr::group_by()</code></a>&nbsp;:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1"></a>flights <span class="sc">|&gt;</span> </span>
+<span id="cb95-2"><a href="#cb95-2"></a>  <span class="fu">group_by</span>(month, dest) <span class="sc">|&gt;</span> </span>
+<span id="cb95-3"><a href="#cb95-3"></a>  <span class="fu">summarise</span>(<span class="at">nb =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb95-4"><a href="#cb95-4"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(nb))</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'month'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,113 × 3
+# Groups:   month [12]
+   month dest     nb
+   &lt;int&gt; &lt;chr&gt; &lt;int&gt;
+ 1     8 ORD    1604
+ 2    10 ORD    1604
+ 3     5 ORD    1582
+ 4     9 ORD    1582
+ 5     7 ORD    1573
+ 6     6 ORD    1547
+ 7     7 ATL    1511
+ 8     8 ATL    1507
+ 9     8 LAX    1505
+10     7 LAX    1500
+# ℹ 1,103 more rows</code></pre>
+</div>
+</div>
+<p>On peut également compter selon plusieurs variables&nbsp;:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1"></a>flights <span class="sc">|&gt;</span> </span>
+<span id="cb98-2"><a href="#cb98-2"></a>  <span class="fu">count</span>(origin, dest) <span class="sc">|&gt;</span> </span>
+<span id="cb98-3"><a href="#cb98-3"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n))</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 224 × 3
+   origin dest      n
+   &lt;chr&gt;  &lt;chr&gt; &lt;int&gt;
+ 1 JFK    LAX   11262
+ 2 LGA    ATL   10263
+ 3 LGA    ORD    8857
+ 4 JFK    SFO    8204
+ 5 LGA    CLT    6168
+ 6 EWR    ORD    6100
+ 7 JFK    BOS    5898
+ 8 LGA    MIA    5781
+ 9 JFK    MCO    5464
+10 EWR    BOS    5327
+# ℹ 214 more rows</code></pre>
+</div>
+</div>
+<p>On peut utiliser plusieurs opérations de groupage dans le même <em>pipeline</em>. Ainsi, si l’on souhaite déterminer le couple origine/destination ayant le plus grand nombre de vols selon le mois de l’année, on devra procéder en deux étapes&nbsp;:</p>
+<ul>
+<li><p>d’abord grouper selon mois, origine et destination pour calculer le nombre de vols</p></li>
+<li><p>puis grouper uniquement selon le mois pour sélectionner la ligne avec la valeur maximale.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1"></a>flights <span class="sc">|&gt;</span> </span>
+<span id="cb100-2"><a href="#cb100-2"></a>  <span class="fu">group_by</span>(month, origin, dest) <span class="sc">|&gt;</span> </span>
+<span id="cb100-3"><a href="#cb100-3"></a>  <span class="fu">summarise</span>(<span class="at">nb =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb100-4"><a href="#cb100-4"></a>  <span class="fu">group_by</span>(month) <span class="sc">|&gt;</span> </span>
+<span id="cb100-5"><a href="#cb100-5"></a>  <span class="fu">filter</span>(nb <span class="sc">==</span> <span class="fu">max</span>(nb))</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'month', 'origin'. You can override using
+the `.groups` argument.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 12 × 4
+# Groups:   month [12]
+   month origin dest     nb
+   &lt;int&gt; &lt;chr&gt;  &lt;chr&gt; &lt;int&gt;
+ 1     1 JFK    LAX     937
+ 2     2 JFK    LAX     834
+ 3     3 JFK    LAX     960
+ 4     4 JFK    LAX     935
+ 5     5 JFK    LAX     960
+ 6     6 JFK    LAX     928
+ 7     7 JFK    LAX     985
+ 8     8 JFK    LAX     979
+ 9     9 JFK    LAX     925
+10    10 JFK    LAX     965
+11    11 JFK    LAX     907
+12    12 JFK    LAX     947</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Mise en garde
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Lorsqu’on effectue un <a href="https://dplyr.tidyverse.org/reference/group_by.html"><code>dplyr::group_by()</code></a> suivi d’un <a href="https://dplyr.tidyverse.org/reference/summarise.html"><code>dplyr::summarise()</code></a>, le tableau résultat est automatiquement dégroupé <em>de la dernière variable de regroupement</em>. Ainsi le tableau généré par le code suivant est groupé par <em><code>month</code></em> et <em><code>origin</code></em><a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a>&nbsp;:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1"></a>flights <span class="sc">|&gt;</span> </span>
+<span id="cb103-2"><a href="#cb103-2"></a>  <span class="fu">group_by</span>(month, origin, dest) <span class="sc">|&gt;</span> </span>
+<span id="cb103-3"><a href="#cb103-3"></a>  <span class="fu">summarise</span>(<span class="at">nb =</span> <span class="fu">n</span>())</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'month', 'origin'. You can override using
+the `.groups` argument.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2,313 × 4
+# Groups:   month, origin [36]
+   month origin dest     nb
+   &lt;int&gt; &lt;chr&gt;  &lt;chr&gt; &lt;int&gt;
+ 1     1 EWR    ALB      64
+ 2     1 EWR    ATL     362
+ 3     1 EWR    AUS      51
+ 4     1 EWR    AVL       2
+ 5     1 EWR    BDL      37
+ 6     1 EWR    BNA     111
+ 7     1 EWR    BOS     430
+ 8     1 EWR    BQN      31
+ 9     1 EWR    BTV     100
+10     1 EWR    BUF     119
+# ℹ 2,303 more rows</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="no-row-height column-margin column-container"><p><sup>8</sup>&nbsp;c’est expliqué dans le message affiché dans la console, cela peut être contrôlé avec l’argument .groups de dplyr::summarise(), dont les options sont décrites dans l’aide de la fonction.</p></div><p>Cela peut permettre d’enchaîner les opérations groupées. Dans l’exemple suivant, on calcule le pourcentage des trajets pour chaque destination par rapport à tous les trajets du mois&nbsp;:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1"></a>flights <span class="sc">|&gt;</span> </span>
+<span id="cb106-2"><a href="#cb106-2"></a>  <span class="fu">group_by</span>(month, dest) <span class="sc">|&gt;</span> </span>
+<span id="cb106-3"><a href="#cb106-3"></a>  <span class="fu">summarise</span>(<span class="at">nb =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb106-4"><a href="#cb106-4"></a>  <span class="fu">mutate</span>(<span class="at">pourcentage =</span> nb <span class="sc">/</span> <span class="fu">sum</span>(nb) <span class="sc">*</span> <span class="dv">100</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'month'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,113 × 4
+# Groups:   month [12]
+   month dest     nb pourcentage
+   &lt;int&gt; &lt;chr&gt; &lt;int&gt;       &lt;dbl&gt;
+ 1     1 ALB      64     0.237  
+ 2     1 ATL    1396     5.17   
+ 3     1 AUS     169     0.626  
+ 4     1 AVL       2     0.00741
+ 5     1 BDL      37     0.137  
+ 6     1 BHM      25     0.0926 
+ 7     1 BNA     399     1.48   
+ 8     1 BOS    1245     4.61   
+ 9     1 BQN      93     0.344  
+10     1 BTV     223     0.826  
+# ℹ 1,103 more rows</code></pre>
+</div>
+</div>
+<p>On peut à tout moment dégrouper un tableau à l’aide de <a href="https://dplyr.tidyverse.org/reference/group_by.html"><code>dplyr::ungroup()</code></a>. Ce serait par exemple nécessaire, dans l’exemple précédent, si on voulait calculer le pourcentage sur le nombre total de vols plutôt que sur le nombre de vols par mois&nbsp;:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1"></a>flights <span class="sc">|&gt;</span> </span>
+<span id="cb109-2"><a href="#cb109-2"></a>  <span class="fu">group_by</span>(month, dest) <span class="sc">|&gt;</span> </span>
+<span id="cb109-3"><a href="#cb109-3"></a>  <span class="fu">summarise</span>(<span class="at">nb =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb109-4"><a href="#cb109-4"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb109-5"><a href="#cb109-5"></a>  <span class="fu">mutate</span>(<span class="at">pourcentage =</span> nb <span class="sc">/</span> <span class="fu">sum</span>(nb) <span class="sc">*</span> <span class="dv">100</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'month'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,113 × 4
+   month dest     nb pourcentage
+   &lt;int&gt; &lt;chr&gt; &lt;int&gt;       &lt;dbl&gt;
+ 1     1 ALB      64    0.0190  
+ 2     1 ATL    1396    0.415   
+ 3     1 AUS     169    0.0502  
+ 4     1 AVL       2    0.000594
+ 5     1 BDL      37    0.0110  
+ 6     1 BHM      25    0.00742 
+ 7     1 BNA     399    0.118   
+ 8     1 BOS    1245    0.370   
+ 9     1 BQN      93    0.0276  
+10     1 BTV     223    0.0662  
+# ℹ 1,103 more rows</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><a href="https://dplyr.tidyverse.org/reference/count.html"><code>dplyr::count()</code></a>, par contre, renvoi un tableau non groupé&nbsp;:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1"></a>flights <span class="sc">|&gt;</span> </span>
+<span id="cb112-2"><a href="#cb112-2"></a>  <span class="fu">count</span>(month, dest)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,113 × 3
+   month dest      n
+   &lt;int&gt; &lt;chr&gt; &lt;int&gt;
+ 1     1 ALB      64
+ 2     1 ATL    1396
+ 3     1 AUS     169
+ 4     1 AVL       2
+ 5     1 BDL      37
+ 6     1 BHM      25
+ 7     1 BNA     399
+ 8     1 BOS    1245
+ 9     1 BQN      93
+10     1 BTV     223
+# ℹ 1,103 more rows</code></pre>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="cheatsheet" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="cheatsheet"><span class="header-section-number">4</span> Cheatsheet</h2>
+<p>Ce mot barbare est la contraction de <em>cheat</em> càd triche dans la langue de Molière et <em>sheet</em> càd feuille. Donc feuille de triche.</p>
+<p>Ce sont des <code>pdf</code> en <em>A4</em> recto verso qui résument et donnent une vue d’ensemble des packages de <code>R</code>.</p>
+<p>Ces <em>cheatsheets</em> sont gérés par <a href="https://posit.co/" title="Site de posit">posit, la maison mère de RStudio</a>. C’est une mine d’informations, de trucs et astuces.</p>
+<ul>
+<li><p><a href="https://posit.co/resources/cheatsheets/?type=posit-cheatsheets/">les cheatsheets de *posit* en anglais</a></p></li>
+<li><p><a href="https://posit.co/resources/cheatsheets/?type=translations/">des traductions en de nombreuse langues</a>, dont le français</p></li>
+<li><p><a href="https://rstudio.github.io/cheatsheets/contributed-cheatsheets.html?_gl=1*38cb7h*_ga*MTMwNDQ3NjYyMi4xNzA3MTI1MDc4*_ga_2C0WZ1JHG0*MTcxNDcyMjc4MS4xNC4xLjE3MTQ3MjI5NzIuMC4wLjA.">et des contributions bénévoles</a></p></li>
+</ul>
+</section>
+<section id="webin-r" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="webin-r"><span class="header-section-number">5</span> webin-R</h2>
+<p>Joseph LARMARANGE <a href="https://youtu.be/aFvBhgmawcs">a réalisé un cours sur youtube consacré à dplyr</a></p>
+
+
 </section>
 
 

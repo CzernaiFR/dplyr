@@ -2,7 +2,6 @@ project:
   type: website
   output-dir: docs
 
-  
 author: 
   - name: Joseph LARMARANGE
     url: https://larmarange.github.io/guide-R/
@@ -15,7 +14,9 @@ website:
     left:
       - href: index.qmd
         text: Accueil
+      - 002_pipe.qmd
       - 005_dplyr.qmd
+      
 
 format:
   html:
@@ -42,4 +43,4 @@ editor: source
 lang: fr-FR
 date: 2024-04-29
 date-modified: last-modified
-date-format: ddd DD MMM YYYY
+date-format: ddd D MMM YYYY

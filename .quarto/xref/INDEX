@@ -10,5 +10,11 @@
   },
   "005_dplyr.qmd": {
     "005_dplyr.html": "2cc15e16"
+  },
+  "900_summarise.qmd": {
+    "900_summarise.html": "e55e0797"
+  },
+  "002_pipe.qmd": {
+    "002_pipe.html": "16a89f06"
   }
 }
