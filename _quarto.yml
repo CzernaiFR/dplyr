@@ -21,6 +21,7 @@ website:
       - 002_pipe.qmd
       - 005_dplyr.qmd
       - 010_combiner-variables.qmd
+      - 020_graphiques-ggplot2.qmd
       
 
 format:

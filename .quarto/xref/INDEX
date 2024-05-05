@@ -19,5 +19,8 @@
   },
   "010_combiner-variables.qmd": {
     "010_combiner-variables.html": "02105c59"
+  },
+  "020_graphiques-ggplot2.qmd": {
+    "020_graphiques-ggplot2.html": "032376ea"
   }
 }

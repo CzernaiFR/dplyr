@@ -3,3 +3,159 @@ title: "Graphiques avec `ggplot2`"
 ---
 
 [Source](https://larmarange.github.io/guide-R/analyses/ggplot2.html#sec-cheatsheet-ggplot2)
+
+Le package [ggplot2](https://ggplot2.tidyverse.org/) fait partie intégrante du *tidyverse*. Développé par Hadley Wickham, ce package met en œuvre la grammaire graphique théorisée par Leland Wilkinson. Il devient vite indispensable lorsque l’on souhaite réaliser des graphiques un peu complexe.
+
+## Ressources
+
+Il existe de très nombreuses ressources traitant de [ggplot2](https://ggplot2.tidyverse.org/).
+
+Pour une introduction en français, on pourra se référer au chapitre [Visualiser avec ggplot2](https://juba.github.io/tidyverse/08-ggplot2.html) de l’*Introduction à R et au tidyverse* de Julien Barnier, au chapitre [Introduction à ggplot2, la grammaire des graphiques](https://larmarange.github.io/analyse-R/intro-ggplot2.html) du site *analyse-R* et adapté d’une séance de cours de François Briatte, ou encore au chapitre [Graphiques](http://egallic.fr/Enseignement/R/m1_stat_eco_logiciel_R.pdf) du cours *Logiciel R et programmation* d’Ewen Gallic.
+
+Pour les anglophones, la référence reste encore l’ouvrage *ggplot2: Elegant Graphics for Data Analysis* d’Hadley Wickham lui-même, dont la troisième édition est librement accessible en ligne (<https://ggplot2-book.org/>). D’un point de vue pratique, l’ouvrage *R Graphics Cookbook: practical recipes for visualizing data* de Winston Chang est une mine d’informations, ouvrage là encore librement accessible en ligne (<https://r-graphics.org/>).
+
+## Les bases
+
+[ggplot2](https://ggplot2.tidyverse.org/) nécessite que les données du graphique soient sous la forme d’un tableau de données (*data.frame* ou *tibble*) au format *tidy*, c’est-à-dire avec une ligne par observation et les différentes valeurs à représenter sous forme de variables du tableau.
+
+Tous les graphiques avec [ggplot2](https://ggplot2.tidyverse.org/) suivent une même logique. En **premier** lieu, on appellera la fonction [`ggplot2::ggplot()`](https://ggplot2.tidyverse.org/reference/ggplot.html) en lui passant en paramètre le fichier de données.
+
+[ggplot2](https://ggplot2.tidyverse.org/) nomme *esthétiques* les différentes propriétés visuelles d’un graphique, à savoir l’axe des x (`x`), celui des y (`y`), la couleur des lignes (`colour`), celle de remplissage des polygones (`fill`), le type de lignes (`linetype`), la forme des points (`shape`), etc. Une représentation graphique consiste donc à représenter chacune de nos variables d’intérêt selon une esthétique donnée. En **second** lieu, on appellera donc la fonction [`ggplot2::aes()`](https://ggplot2.tidyverse.org/reference/aes.html) pour indiquer la correspondance entre les variables de notre fichier de données et les esthétiques du graphique.
+
+A minima, il est nécessaire d’indiquer en **troisième** lieu une *géométrie*, autrement dit la manière dont les éléments seront représentés visuellement. À chaque géométrie corresponds une fonction commençant par `geom_`, par exemple [`ggplot2::geom_point()`](https://ggplot2.tidyverse.org/reference/geom_point.html) pour dessiner des points, [`ggplot2::geom_line()`](https://ggplot2.tidyverse.org/reference/geom_path.html) pour des lignes, [`ggplot2::geom_bar()`](https://ggplot2.tidyverse.org/reference/geom_bar.html) pour des barres ou encore [`ggplot2::geom_area()`](https://ggplot2.tidyverse.org/reference/geom_ribbon.html) pour des aires. Il existe de nombreuses géométries différentes, chacune prenant en compte certaines esthétiques, certaines étant requises pour cette géométrie et d’autres optionnelles. La liste des esthétiques prises en compte par chaque géométrie est indiquée dans l’aide en ligne de cette dernière.
+
+On trouvera une liste des géométries dans la *cheat sheet* de [ggplot2](https://ggplot2.tidyverse.org/).
+
+Voici un exemple minimal de graphique avec [ggplot2](https://ggplot2.tidyverse.org/) :
+
+```{r}
+library(ggplot2)
+p <- 
+  ggplot(iris) +
+  aes(
+    x = Petal.Length, 
+    y = Petal.Width, 
+    colour = Species
+  ) +
+  geom_point()
+p
+```
+
+::: callout-important
+## Syntaxe additive
+
+Le développement de [ggplot2](https://ggplot2.tidyverse.org/) a débuté avant celui du *tidyverse* et la généralisation du *pipe*. Dès lors, on ne sera pas étonné que la syntaxe de [ggplot2](https://ggplot2.tidyverse.org/) n’ait pas recours à ce dernier mais repose sur une approche *additive*. Un graphique est dès lors initialisé avec la fonction [`ggplot2::ggplot()`](https://ggplot2.tidyverse.org/reference/ggplot.html) et l’on ajoutera successivement des éléments au graphique en appelant différentes fonctions et en utilisant l’opérateur +.
+:::
+
+Il est ensuite possible de personnaliser de nombreux éléments d’un graphique et notamment :
+
+-   les *étiquettes* ou *labs* (titre, axes, légendes) avec [`ggplot2::ggtitle()`](https://ggplot2.tidyverse.org/reference/labs.html), [`ggplot2::xlab()`](https://ggplot2.tidyverse.org/reference/labs.html), [`ggplot2::ylab()`](https://ggplot2.tidyverse.org/reference/labs.html) ou encore la fonction plus générique [`ggplot2::labs()`](https://ggplot2.tidyverse.org/reference/labs.html) ;
+
+-   les *échelles* (*scales*) des différentes esthétiques avec les fonctions commençant par `scale_` ;
+
+-   le système de *coordonnées* avec les fonctions commençant par `coord_` ;
+
+-   les *facettes* (*facets*) avec les fonctions commençant par `facet_` ;
+
+-   la *légende* (*guides*) avec les fonctions commençant par `guide_` ;
+
+-   le *thème* du graphiques (mise en forme des différents éléments) avec [`ggplot2::theme()`](https://ggplot2.tidyverse.org/reference/theme.html).
+
+    ```{r}
+    p +
+      labs(
+        x = "Longueur du pétale",
+        y = "Largeur du pétale",
+        colour = "Espèce"
+      ) +
+      ggtitle(
+        "Relation entre longueur et largeur des pétales",
+        subtitle = "Jeu de données Iris"
+      ) +
+      scale_x_continuous(breaks = 1:7) +
+      scale_y_continuous(
+        labels = scales::label_number(decimal.mark = ",")
+      ) +
+      coord_equal() +
+      facet_grid(cols = vars(Species)) +
+      guides(
+        color = guide_legend(nrow = 2)
+      ) +
+      theme_light() +
+      theme(
+        legend.position = "bottom",
+        axis.title = element_text(face = "bold")
+      )
+    ```
+
+## **Combiner plusieurs graphiques**
+
+Plusieurs packages proposent des fonctions pour combiner ensemble des graphiques [ggplot2](https://ggplot2.tidyverse.org/), comme [patchwork](https://patchwork.data-imaginist.com/), [ggpubr](https://rpkgs.datanovia.com/ggpubr/), `{egg}` ou [cowplot](https://wilkelab.org/cowplot/). Ici, nous privilégierons le package [patchwork](https://patchwork.data-imaginist.com/) car, bien qu’il ne fasse pas partie du *tidyverse*, est développé et maintenant par les mêmes auteurs que [ggplot2](https://ggplot2.tidyverse.org/).
+
+Commençons par créer quelques graphiques avec [ggplot2](https://ggplot2.tidyverse.org/).
+
+```{r}
+p1 <- ggplot(mtcars) +
+  aes(x = wt, y = mpg) + 
+  geom_point()
+p2 <- ggplot(mtcars) +
+  aes(x = factor(cyl)) +
+  geom_bar()
+p3 <- ggplot(mtcars) +
+  aes(x = factor(cyl), y = mpg) +
+  geom_violin() +
+  theme(axis.title = element_text(size = 20))
+p4 <- ggplot(mtcars) +
+  aes(x = factor(cyl), y = mpg) + 
+  geom_boxplot() +
+  ylab(NULL)
+```
+
+### `patchwork`
+
+Le symbole `+` permet de combiner des graphiques entre eux. Le package [patchwork](https://patchwork.data-imaginist.com/) déterminera le nombre de lignes et de colonnes en fonction du nombre de graphiques. On pourra noter que les axes des graphiques sont alignés les uns par rapports aux autres.
+
+```{r}
+library(patchwork)
+p1 + p2 + p3 + p4
+```
+
+Les symboles `|` et `/` permettent d’indiquer une disposition côte à côte ou les uns au-dessus des autres.
+
+```{r}
+p1 | p2 / p3
+```
+
+On peut utiliser les parenthèses pour indiquer des arrangements plus complexes.
+
+```{r}
+(p1 + p2) / p3
+```
+
+```{r}
+(p1 + p2) | p3
+```
+
+```{r}
+list(p1, p2, p3, p4) |> 
+  wrap_plots()
+```
+
+La fonction [`patchwork::plot_layout()`](https://patchwork.data-imaginist.com/reference/plot_layout.html) permet de contrôler les hauteurs / largeurs relatives des lignes / colonnes.
+
+```{r}
+p1 + p2 + p3 + p4 + plot_layout(widths = c(2, 1))
+```
+
+On peut également ajouter un titre ou des étiquettes avec [`patchwork::plot_annotation()`](https://patchwork.data-imaginist.com/reference/plot_annotation.html).
+
+```{r}
+p1 + p2 + p3 + p4 +
+  plot_annotation(
+    title = "Titre du graphique",
+    subtitle = "sous-titre",
+    caption = "notes additionelles",
+    tag_levels = "a",
+    tag_suffix = "."
+  )
+```
