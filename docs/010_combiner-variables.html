@@ -9,7 +9,7 @@
 <meta name="author" content="Joseph LARMARANGE">
 <meta name="author" content="Roger MARTIN">
 
-<title>R_Guide_notes - Le pipe</title>
+<title>R_Guide_notes - Combiner des variables</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -131,7 +131,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Accueil</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./002_pipe.html" aria-current="page"> 
+    <a class="nav-link" href="./002_pipe.html"> 
 <span class="menu-text">Le <code>pipe</code></span></a>
   </li>  
   <li class="nav-item">
@@ -139,7 +139,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text"><code>dplyr</code></span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./010_combiner-variables.html"> 
+    <a class="nav-link active" href="./010_combiner-variables.html" aria-current="page"> 
 <span class="menu-text">Combiner des variables</span></a>
   </li>  
 </ul>
@@ -164,17 +164,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Sur cette page</h2>
    
   <ul>
-  <li><a href="#le-pipe-natif-de-r" id="toc-le-pipe-natif-de-r" class="nav-link active" data-scroll-target="#le-pipe-natif-de-r"><span class="header-section-number">1</span> Le <code>pipe</code> natif de <code>R</code> <code>|&gt;</code></a></li>
-  <li><a href="#accéder-à-un-élément-avec-purrrpluck-et-purrrchuck" id="toc-accéder-à-un-élément-avec-purrrpluck-et-purrrchuck" class="nav-link" data-scroll-target="#accéder-à-un-élément-avec-purrrpluck-et-purrrchuck"><span class="header-section-number">2</span> <strong>Accéder à un élément avec <code>purrr::pluck()</code> et <code>purrr::chuck()</code></strong></a></li>
+  <li><a href="#if_else" id="toc-if_else" class="nav-link active" data-scroll-target="#if_else"><span class="header-section-number">1</span> <code>if_else()</code></a></li>
+  <li><a href="#case_when" id="toc-case_when" class="nav-link" data-scroll-target="#case_when"><span class="header-section-number">2</span> <code>case_when()</code></a></li>
+  <li><a href="#recode_if" id="toc-recode_if" class="nav-link" data-scroll-target="#recode_if"><span class="header-section-number">3</span> <code>recode_if()</code></a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/CzernaiFR/dplyr/blob/main/002_pipe.qmd" class="toc-action"><i class="bi bi-github"></i>Voir la source</a></li><li><a href="https://github.com/CzernaiFR/dplyr/issues/new" class="toc-action"><i class="bi empty"></i>Faire part d'un problème</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/CzernaiFR/dplyr/blob/main/010_combiner-variables.qmd" class="toc-action"><i class="bi bi-github"></i>Voir la source</a></li><li><a href="https://github.com/CzernaiFR/dplyr/issues/new" class="toc-action"><i class="bi empty"></i>Faire part d'un problème</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Le <code>pipe</code></h1>
+<h1 class="title">Combiner des variables</h1>
 </div>
 
 
@@ -199,7 +200,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modifié</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">sam. 4 mai 2024</p>
+      <p class="date-modified">dim. 5 mai 2024</p>
     </div>
   </div>
     
@@ -210,71 +211,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><a href="https://larmarange.github.io/guide-R/manipulation/pipe.html">Source</a></p>
-<p>Il est fréquent d’enchaîner des opérations en appelant successivement des fonctions sur le résultat de l’appel précédent.</p>
-<p>Prenons un exemple. Supposons que nous ayons un vecteur numérique <code>v</code> dont nous voulons calculer la moyenne puis l’afficher via un message dans la console. Pour un meilleur rendu, nous allons arrondir la moyenne à une décimale, mettre en forme le résultat à la française, c’est-à-dire avec la virgule comme séparateur des décimales, créer une phrase avec le résultat, puis l’afficher dans la console. Voici le code correspondant, étape par étape.</p>
+<p><a href="https://larmarange.github.io/guide-R/manipulation/combiner-variables.html">Source</a></p>
+<p>Parfois, on a besoin de créer une nouvelle variable en partant des valeurs d’une ou plusieurs autres variables. Dans ce cas on peut utiliser les fonctions <a href="https://dplyr.tidyverse.org/reference/if_else.html"><code>dplyr::if_else()</code></a> pour les cas les plus simples, ou <a href="https://dplyr.tidyverse.org/reference/case_when.html"><code>dplyr::case_when()</code></a> pour les cas plus complexes.</p>
+<p>Une fois encore, nous utiliser le jeu de données <code>hdv2003</code> pour illustrer ces différentes fonctions.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>v <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">1.2</span>, <span class="fl">8.7</span>, <span class="fl">5.6</span>, <span class="fl">11.4</span>)</span>
-<span id="cb1-2"><a href="#cb1-2"></a>m <span class="ot">&lt;-</span> <span class="fu">mean</span>(v)</span>
-<span id="cb1-3"><a href="#cb1-3"></a>r <span class="ot">&lt;-</span> <span class="fu">round</span>(m, <span class="at">digits =</span> <span class="dv">1</span>)</span>
-<span id="cb1-4"><a href="#cb1-4"></a>f <span class="ot">&lt;-</span> <span class="fu">format</span>(r, <span class="at">decimal.mark =</span> <span class="st">","</span>)</span>
-<span id="cb1-5"><a href="#cb1-5"></a>p <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"La moyenne est de "</span>, f, <span class="st">"."</span>)</span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="fu">message</span>(p)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>La moyenne est de 6,7.</code></pre>
-</div>
-</div>
-<p>Cette écriture, n’est pas vraiment optimale, car cela entraîne la création d’un grand nombre de variables intermédiaires totalement inutiles. Nous pourrions dès lors imbriquer les différentes fonctions les unes dans les autres&nbsp;:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">message</span>(<span class="fu">paste0</span>(<span class="st">"La moyenne est de "</span>, <span class="fu">format</span>(<span class="fu">round</span>(<span class="fu">mean</span>(v), <span class="at">digits =</span> <span class="dv">1</span>), <span class="at">decimal.mark =</span> <span class="st">","</span>), <span class="st">"."</span>))</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>La moyenne est de 6,7.</code></pre>
-</div>
-</div>
-<p>Nous obtenons bien le même résultat, mais la lecture de cette ligne de code est assez difficile et il n’est pas aisé de bien identifier à quelle fonction est rattaché chaque argument.</p>
-<p>Une amélioration possible serait d’effectuer des retours à la ligne avec une indentation adéquate pour rendre cela plus lisible.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">message</span>(</span>
-<span id="cb5-2"><a href="#cb5-2"></a>  <span class="fu">paste0</span>(</span>
-<span id="cb5-3"><a href="#cb5-3"></a>    <span class="st">"La moyenne est de "</span>, </span>
-<span id="cb5-4"><a href="#cb5-4"></a>    <span class="fu">format</span>(</span>
-<span id="cb5-5"><a href="#cb5-5"></a>      <span class="fu">round</span>(</span>
-<span id="cb5-6"><a href="#cb5-6"></a>        <span class="fu">mean</span>(v), </span>
-<span id="cb5-7"><a href="#cb5-7"></a>        <span class="at">digits =</span> <span class="dv">1</span>), </span>
-<span id="cb5-8"><a href="#cb5-8"></a>      <span class="at">decimal.mark =</span> <span class="st">","</span></span>
-<span id="cb5-9"><a href="#cb5-9"></a>    ),</span>
-<span id="cb5-10"><a href="#cb5-10"></a>    <span class="st">"."</span></span>
-<span id="cb5-11"><a href="#cb5-11"></a>  )</span>
-<span id="cb5-12"><a href="#cb5-12"></a>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>La moyenne est de 6,7.</code></pre>
-</div>
-</div>
-<p>C’est déjà mieux, mais toujours pas optimal.</p>
-<section id="le-pipe-natif-de-r" class="level2" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="le-pipe-natif-de-r"><span class="header-section-number">1</span> Le <code>pipe</code> natif de <code>R</code> <code>|&gt;</code></h2>
-<p>Depuis la version 4.1, <strong>R</strong> a introduit ce que l’on nomme un <em>pipe</em> (tuyau en anglais), un nouvel opérateur noté <code>|&gt;</code>.</p>
-<p>Le principe de cet opérateur est de passer l’élément situé à sa gauche comme premier argument de la fonction située à sa droite. Ainsi, l’écriture <code>x |&gt; f()</code> est équivalente à <code>f(x)</code> et l’écriture <code>x |&gt; f(y)</code> à&nbsp;<code>f(x,&nbsp;y)</code>.</p>
-<p>Parfois, on souhaite passer l’objet <strong>x</strong> à un autre endroit de la fonction <code>f()</code> que le premier argument. Depuis la version 4.2, <strong>R</strong> a introduit l’opérateur <code>_</code>,que l’on nomme un <em>placeholder</em>, pour indiquer où passer l’objet de gauche. Ainsi, <code>x&nbsp;|&gt;&nbsp;f(y, a = _)</code> devient équivalent à <code>f(y,&nbsp;a =&nbsp;x)</code>. <strong>ATTENTION&nbsp;:</strong> le <em>placeholder</em> doit impérativement être transmis à un argument nommé&nbsp;!</p>
-<p>Tout cela semble encore un peu abstrait&nbsp;? Reprenons notre exemple précédent et réécrivons le code avec le <em>pipe</em>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>v <span class="sc">|&gt;</span> </span>
-<span id="cb7-2"><a href="#cb7-2"></a>  <span class="fu">mean</span>() <span class="sc">|&gt;</span> </span>
-<span id="cb7-3"><a href="#cb7-3"></a>  <span class="fu">round</span>(<span class="at">digits =</span> <span class="dv">1</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb7-4"><a href="#cb7-4"></a>  <span class="fu">format</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb7-5"><a href="#cb7-5"></a>  <span class="fu">paste0</span>(<span class="st">"La moyenne est de "</span>, <span class="at">m =</span> _, <span class="st">"."</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "La moyenne est de 6,7."</code></pre>
-</div>
-</div>
-<p>Le code n’est-il pas plus lisible&nbsp;?</p>
-</section>
-<section id="accéder-à-un-élément-avec-purrrpluck-et-purrrchuck" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="accéder-à-un-élément-avec-purrrpluck-et-purrrchuck"><span class="header-section-number">2</span> <strong>Accéder à un élément avec <code>purrr::pluck()</code> et <code>purrr::chuck()</code></strong></h2>
-<p>Il est fréquent d’avoir besoin d’accéder à un élément précis d’une liste, d’un tableau ou d’un vecteur, ce que l’on fait d’ordinaire avec la syntaxe <code>[[]]</code> ou <code>$</code> pour les listes ou <code>[]</code> pour les vecteurs. Cependant, cette syntaxe se combine souvent mal avec un enchaînement d’opérations utilisant le <em>pipe</em>.</p>
-<p>Le package <a href="https://purrr.tidyverse.org/">purrr</a>, chargé par défaut avec <a href="https://tidyverse.tidyverse.org/"><code>library(tidyverse)</code></a>, fournit une fonction <a href="https://purrr.tidyverse.org/reference/pluck.html"><code>purrr::pluck()</code></a> qui, est l’équivalent de <code>[[]]</code>, et qui permet de récupérer un élément par son nom ou sa position. Ainsi, si l’on considère le tableau de données <code>iris</code>, <code>pluck(iris, "Petal.Witdh")</code> est équivalent à <code>iris$Petal.Width</code>. Voyons un exemple d’utilisation dans le cadre d’un enchaînement d’opérations.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">library</span>(tidyverse, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
 ✔ dplyr     1.1.4     ✔ readr     2.1.5
@@ -287,60 +228,250 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 ✖ dplyr::lag()    masks stats::lag()
 ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">data</span>(<span class="st">"hdv2003"</span>, <span class="at">package =</span> <span class="st">"questionr"</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="if_else" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="if_else"><span class="header-section-number">1</span> <code>if_else()</code></h2>
+<p><a href="https://dplyr.tidyverse.org/reference/if_else.html"><code>dplyr::if_else()</code></a> prend trois arguments&nbsp;: un test, les valeurs à renvoyer si le test est vrai, et les valeurs à renvoyer si le test est faux.</p>
+<p>Voici un exemple simple&nbsp;:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>v <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">12</span>, <span class="dv">14</span>, <span class="dv">8</span>, <span class="dv">16</span>)</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="fu">if_else</span>(v <span class="sc">&gt;</span> <span class="dv">10</span>, <span class="st">"supérieur à 10"</span>, <span class="st">"inférieur à 10"</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "supérieur à 10" "supérieur à 10" "inférieur à 10" "supérieur à 10"</code></pre>
+</div>
+</div>
+<p>La fonction devient plus intéressante avec des tests combinant plusieurs variables. Par exemple, imaginons qu’on souhaite créer une nouvelle variable indiquant les hommes de plus de 60 ans&nbsp;:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>hdv2003 <span class="ot">&lt;-</span> </span>
+<span id="cb6-2"><a href="#cb6-2"></a>  hdv2003 <span class="sc">|&gt;</span> </span>
+<span id="cb6-3"><a href="#cb6-3"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb6-4"><a href="#cb6-4"></a>    <span class="at">statut =</span> <span class="fu">if_else</span>(</span>
+<span id="cb6-5"><a href="#cb6-5"></a>      sexe <span class="sc">==</span> <span class="st">"Homme"</span> <span class="sc">&amp;</span> age <span class="sc">&gt;</span> <span class="dv">60</span>,</span>
+<span id="cb6-6"><a href="#cb6-6"></a>      <span class="st">"Homme de plus de 60 ans"</span>,</span>
+<span id="cb6-7"><a href="#cb6-7"></a>      <span class="st">"Autre"</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a>    )</span>
+<span id="cb6-9"><a href="#cb6-9"></a>  )</span>
+<span id="cb6-10"><a href="#cb6-10"></a>hdv2003 <span class="sc">|&gt;</span> </span>
+<span id="cb6-11"><a href="#cb6-11"></a>  <span class="fu">pull</span>(statut) <span class="sc">|&gt;</span> </span>
+<span id="cb6-12"><a href="#cb6-12"></a>  questionr<span class="sc">::</span><span class="fu">freq</span>()</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                           n    % val%
+Autre                   1778 88.9 88.9
+Homme de plus de 60 ans  222 11.1 11.1</code></pre>
+</div>
+</div>
+<p>Il est possible d’utiliser des variables ou des combinaisons de variables au sein du <a href="https://dplyr.tidyverse.org/reference/if_else.html"><code>dplyr::if_else()</code></a>. Supposons une petite enquête menée auprès de femmes et d’hommes. Le questionnaire comportait une question de préférence posée différemment aux femmes et aux hommes et dont les réponses ont ainsi été collectées dans deux variables différentes, <em>pref_f</em> et <em>pref_h</em>, que l’on souhaite combiner en une seule variable. De même, une certaine mesure quantitative a été réalisée, mais une correction est nécessaire pour normaliser ce score (retirer 0.4 aux scores des hommes et 0.6 aux scores des femmes). Cela peut être réalisé avec le code ci-dessous.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb8-2"><a href="#cb8-2"></a>  <span class="at">sexe =</span> <span class="fu">c</span>(<span class="st">"f"</span>, <span class="st">"f"</span>, <span class="st">"h"</span>, <span class="st">"h"</span>),</span>
+<span id="cb8-3"><a href="#cb8-3"></a>  <span class="at">pref_f =</span> <span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="cn">NA</span>, <span class="cn">NA</span>),</span>
+<span id="cb8-4"><a href="#cb8-4"></a>  <span class="at">pref_h =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>, <span class="st">"c"</span>, <span class="st">"d"</span>),</span>
+<span id="cb8-5"><a href="#cb8-5"></a>  <span class="at">mesure =</span> <span class="fu">c</span>(<span class="fl">1.2</span>, <span class="fl">4.1</span>, <span class="fl">3.8</span>, <span class="fl">2.7</span>)</span>
+<span id="cb8-6"><a href="#cb8-6"></a>)</span>
+<span id="cb8-7"><a href="#cb8-7"></a>df</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 4
+  sexe  pref_f pref_h mesure
+  &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;dbl&gt;
+1 f     a      &lt;NA&gt;      1.2
+2 f     b      &lt;NA&gt;      4.1
+3 h     &lt;NA&gt;   c         3.8
+4 h     &lt;NA&gt;   d         2.7</code></pre>
+</div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>iris <span class="sc">|&gt;</span> </span>
-<span id="cb11-2"><a href="#cb11-2"></a>  <span class="fu">pluck</span>(<span class="st">"Petal.Width"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb11-3"><a href="#cb11-3"></a>  <span class="fu">mean</span>()</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>df <span class="ot">&lt;-</span> </span>
+<span id="cb10-2"><a href="#cb10-2"></a>  df <span class="sc">|&gt;</span> </span>
+<span id="cb10-3"><a href="#cb10-3"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb10-4"><a href="#cb10-4"></a>    <span class="at">pref =</span> <span class="fu">if_else</span>(sexe <span class="sc">==</span> <span class="st">"f"</span>, pref_f, pref_h),</span>
+<span id="cb10-5"><a href="#cb10-5"></a>    <span class="at">indicateur =</span> <span class="fu">if_else</span>(sexe <span class="sc">==</span> <span class="st">"h"</span>, mesure <span class="sc">-</span> <span class="fl">0.4</span>, mesure <span class="sc">-</span> <span class="fl">0.6</span>)</span>
+<span id="cb10-6"><a href="#cb10-6"></a>  )</span>
+<span id="cb10-7"><a href="#cb10-7"></a>df</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.199333</code></pre>
+<pre><code># A tibble: 4 × 6
+  sexe  pref_f pref_h mesure pref  indicateur
+  &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt;
+1 f     a      &lt;NA&gt;      1.2 a            0.6
+2 f     b      &lt;NA&gt;      4.1 b            3.5
+3 h     &lt;NA&gt;   c         3.8 c            3.4
+4 h     &lt;NA&gt;   d         2.7 d            2.3</code></pre>
 </div>
 </div>
-<p>Équivalent à&nbsp;:</p>
+</section>
+<section id="case_when" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="case_when"><span class="header-section-number">2</span> <code>case_when()</code></h2>
+<p><a href="https://dplyr.tidyverse.org/reference/case_when.html"><code>dplyr::case_when()</code></a> est une généralisation de <a href="https://dplyr.tidyverse.org/reference/if_else.html"><code>dplyr::if_else()</code></a> qui permet d’indiquer plusieurs tests et leurs valeurs associées.</p>
+<p>Imaginons que l’on souhaite créer une nouvelle variable permettant d’identifier les hommes de plus de 60 ans, les femmes de plus de 60 ans, et les autres. On peut utiliser la syntaxe suivante&nbsp;:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="fu">mean</span>(iris<span class="sc">$</span>Petal.Width)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>hdv2003 <span class="ot">&lt;-</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a>  hdv2003 <span class="sc">|&gt;</span> </span>
+<span id="cb12-3"><a href="#cb12-3"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-4"><a href="#cb12-4"></a>    <span class="at">statut =</span> <span class="fu">case_when</span>(</span>
+<span id="cb12-5"><a href="#cb12-5"></a>      age <span class="sc">&gt;=</span> <span class="dv">60</span> <span class="sc">&amp;</span> sexe <span class="sc">==</span> <span class="st">"Homme"</span> <span class="sc">~</span> <span class="st">"Homme, 60 et plus"</span>,</span>
+<span id="cb12-6"><a href="#cb12-6"></a>      age <span class="sc">&gt;=</span> <span class="dv">60</span> <span class="sc">&amp;</span> sexe <span class="sc">==</span> <span class="st">"Femme"</span> <span class="sc">~</span> <span class="st">"Femme, 60 et plus"</span>,</span>
+<span id="cb12-7"><a href="#cb12-7"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Autre"</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a>    )</span>
+<span id="cb12-9"><a href="#cb12-9"></a>  )</span>
+<span id="cb12-10"><a href="#cb12-10"></a>hdv2003 <span class="sc">|&gt;</span> </span>
+<span id="cb12-11"><a href="#cb12-11"></a>  <span class="fu">pull</span>(statut) <span class="sc">|&gt;</span> </span>
+<span id="cb12-12"><a href="#cb12-12"></a>  questionr<span class="sc">::</span><span class="fu">freq</span>()</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 1.199333</code></pre>
+<pre><code>                     n    % val%
+Autre             1484 74.2 74.2
+Femme, 60 et plus  278 13.9 13.9
+Homme, 60 et plus  238 11.9 11.9</code></pre>
 </div>
 </div>
-<p><a href="https://purrr.tidyverse.org/reference/pluck.html"><code>purrr::pluck()</code></a> fonctionne également sur des vecteurs (et dans ce cas opère comme <code>[]</code>).</p>
+<p><a href="https://dplyr.tidyverse.org/reference/case_when.html"><code>dplyr::case_when()</code></a> prend en arguments une série d’instructions sous la forme <code>condition ~ valeur</code>. Il les exécute une par une, et dès qu’une <code>condition</code> est vraie, il renvoi la <code>valeur</code> associée.</p>
+<p>La clause <code>TRUE ~ "Autre"</code> permet d’assigner une valeur à toutes les lignes pour lesquelles aucune des conditions précédentes n’est vraie.</p>
+</section>
+<section id="recode_if" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="recode_if"><span class="header-section-number">3</span> <code>recode_if()</code></h2>
+<p>Parfois, on n’a besoin de ne modifier une variable que pour certaines observations. Prenons un petit exemple&nbsp;:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>v <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>, <span class="st">"d"</span>)</span>
-<span id="cb15-2"><a href="#cb15-2"></a>v <span class="sc">|&gt;</span> <span class="fu">pluck</span>(<span class="dv">2</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb14-2"><a href="#cb14-2"></a>  <span class="at">pref =</span> <span class="fu">factor</span>(<span class="fu">c</span>(<span class="st">"bleu"</span>, <span class="st">"rouge"</span>, <span class="st">"autre"</span>, <span class="st">"rouge"</span>, <span class="st">"autre"</span>)),</span>
+<span id="cb14-3"><a href="#cb14-3"></a>  <span class="at">autre_details =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>, <span class="st">"bleu ciel"</span>, <span class="cn">NA</span>, <span class="st">"jaune"</span>)</span>
+<span id="cb14-4"><a href="#cb14-4"></a>)</span>
+<span id="cb14-5"><a href="#cb14-5"></a>df</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "b"</code></pre>
+<pre><code># A tibble: 5 × 2
+  pref  autre_details
+  &lt;fct&gt; &lt;chr&gt;        
+1 bleu  &lt;NA&gt;         
+2 rouge &lt;NA&gt;         
+3 autre bleu ciel    
+4 rouge &lt;NA&gt;         
+5 autre jaune        </code></pre>
 </div>
 </div>
-<p>On peut également, dans un même appel à <a href="https://purrr.tidyverse.org/reference/pluck.html"><code>purrr::pluck()</code></a>, enchaîner plusieurs niveaux. Les trois syntaxes ci-après sont ainsi équivalents&nbsp;:</p>
+<p>Nous avons demandé aux enquêtés d’indiquer leur couleur préférée. Ils pouvaient répondre bleu ou rouge et avait également la possibilité de choisir autre et d’indiquer la valeur de leur choix dans un champs textuel libre.</p>
+<p>Une des personnes enquêtées a choisi autre et a indiqué dans le champs texte la valeur bleu ciel. Pour les besoins de l’analyse, on peut considérer que cette valeur bleu ciel pour être tout simplement recodée en bleu.</p>
+<p>En syntaxe <strong>R</strong> classique, on pourra simplement faire&nbsp;:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>iris <span class="sc">|&gt;</span> </span>
-<span id="cb17-2"><a href="#cb17-2"></a>  purrr<span class="sc">::</span><span class="fu">pluck</span>(<span class="st">"Sepal.Width"</span>, <span class="dv">3</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>df<span class="sc">$</span>pref[df<span class="sc">$</span>autre_details <span class="sc">==</span> <span class="st">"bleu ciel"</span>] <span class="ot">&lt;-</span> <span class="st">"bleu"</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a>df</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 3.2</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>iris <span class="sc">|&gt;</span> </span>
-<span id="cb19-2"><a href="#cb19-2"></a>  purrr<span class="sc">::</span><span class="fu">pluck</span>(<span class="st">"Sepal.Width"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb19-3"><a href="#cb19-3"></a>  purrr<span class="sc">::</span><span class="fu">pluck</span>(<span class="dv">3</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 3.2</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>iris[[<span class="st">"Sepal.Width"</span>]][<span class="dv">3</span>]</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 3.2</code></pre>
+<pre><code># A tibble: 5 × 2
+  pref  autre_details
+  &lt;fct&gt; &lt;chr&gt;        
+1 bleu  &lt;NA&gt;         
+2 rouge &lt;NA&gt;         
+3 bleu  bleu ciel    
+4 rouge &lt;NA&gt;         
+5 autre jaune        </code></pre>
 </div>
 </div>
-<p>Si l’on demande un élément qui n’existe pas, <code>purrr:pluck()</code> renverra l’élement vide (<code>NULL</code>). Si l’on souhaite plutôt que cela génère une erreur, on aura alors recours à <a href="https://purrr.tidyverse.org/reference/chuck.html"><code>purrr::chuck()</code></a>.</p>
+<p>Avec <a href="https://dplyr.tidyverse.org/reference/if_else.html"><code>dplyr::if_else()</code></a>, on serait tenté d’écrire&nbsp;:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>iris <span class="sc">|&gt;</span> <span class="fu">pluck</span>(<span class="st">"inconnu"</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>df <span class="sc">|&gt;</span> </span>
+<span id="cb18-2"><a href="#cb18-2"></a>  <span class="fu">mutate</span>(<span class="at">pref =</span> <span class="fu">if_else</span>(autre_details <span class="sc">==</span> <span class="st">"bleu ciel"</span>, <span class="st">"bleu"</span>, pref))</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>NULL</code></pre>
+<pre><code># A tibble: 5 × 2
+  pref  autre_details
+  &lt;chr&gt; &lt;chr&gt;        
+1 &lt;NA&gt;  &lt;NA&gt;         
+2 &lt;NA&gt;  &lt;NA&gt;         
+3 bleu  bleu ciel    
+4 &lt;NA&gt;  &lt;NA&gt;         
+5 autre jaune        </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>iris <span class="sc">|&gt;</span> <span class="fu">chuck</span>(<span class="st">"inconnu"</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error in `chuck()`:
-! Can't find name `inconnu` in vector.</code></pre>
+</div>
+<p>On obtient une erreur, car <a href="https://dplyr.tidyverse.org/reference/if_else.html"><code>dplyr::if_else()</code></a> exige les valeurs fournie pour <code>true</code> et <code>false</code> soient de même type. Essayons alors&nbsp;:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>df <span class="sc">|&gt;</span> </span>
+<span id="cb20-2"><a href="#cb20-2"></a>  <span class="fu">mutate</span>(<span class="at">pref =</span> <span class="fu">if_else</span>(autre_details <span class="sc">==</span> <span class="st">"bleu ciel"</span>, <span class="fu">factor</span>(<span class="st">"bleu"</span>), pref))</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 2
+  pref  autre_details
+  &lt;fct&gt; &lt;chr&gt;        
+1 &lt;NA&gt;  &lt;NA&gt;         
+2 &lt;NA&gt;  &lt;NA&gt;         
+3 bleu  bleu ciel    
+4 &lt;NA&gt;  &lt;NA&gt;         
+5 autre jaune        </code></pre>
 </div>
 </div>
+<p>Pour obtenir le bon résultat, il faudrait inverser la condition&nbsp;:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>df <span class="sc">|&gt;</span> </span>
+<span id="cb22-2"><a href="#cb22-2"></a>  <span class="fu">mutate</span>(<span class="at">pref =</span> <span class="fu">if_else</span>(</span>
+<span id="cb22-3"><a href="#cb22-3"></a>    autre_details <span class="sc">!=</span> <span class="st">"bleu ciel"</span>, </span>
+<span id="cb22-4"><a href="#cb22-4"></a>    pref, </span>
+<span id="cb22-5"><a href="#cb22-5"></a>    <span class="fu">factor</span>(<span class="st">"bleu"</span>)</span>
+<span id="cb22-6"><a href="#cb22-6"></a>  ))</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 2
+  pref  autre_details
+  &lt;fct&gt; &lt;chr&gt;        
+1 &lt;NA&gt;  &lt;NA&gt;         
+2 &lt;NA&gt;  &lt;NA&gt;         
+3 bleu  bleu ciel    
+4 &lt;NA&gt;  &lt;NA&gt;         
+5 autre jaune        </code></pre>
+</div>
+</div>
+<p>Mais ce n’est toujours pas suffisant. En effet, la variable <em>autre_details</em> a des valeurs manquantes pour lesquelles le test <code>autre_details != "bleu ciel"</code> renvoie <code>NA</code> ce qui une fois encore génère des valeurs manquantes non souhaitées. Dès lors, il nous faut soit définir l’argument <code>missing</code> de <a href="https://dplyr.tidyverse.org/reference/if_else.html"><code>dplyr::if_else()</code></a>, soit être plus précis dans notre test.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>df <span class="sc">|&gt;</span> </span>
+<span id="cb24-2"><a href="#cb24-2"></a>  <span class="fu">mutate</span>(<span class="at">pref =</span> <span class="fu">if_else</span>(</span>
+<span id="cb24-3"><a href="#cb24-3"></a>    autre_details <span class="sc">!=</span> <span class="st">"bleu ciel"</span>, </span>
+<span id="cb24-4"><a href="#cb24-4"></a>    pref, </span>
+<span id="cb24-5"><a href="#cb24-5"></a>    <span class="fu">factor</span>(<span class="st">"bleu"</span>),</span>
+<span id="cb24-6"><a href="#cb24-6"></a>    <span class="at">missing =</span> pref</span>
+<span id="cb24-7"><a href="#cb24-7"></a>  ))</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 2
+  pref  autre_details
+  &lt;fct&gt; &lt;chr&gt;        
+1 bleu  &lt;NA&gt;         
+2 rouge &lt;NA&gt;         
+3 bleu  bleu ciel    
+4 rouge &lt;NA&gt;         
+5 autre jaune        </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>df <span class="sc">|&gt;</span> </span>
+<span id="cb26-2"><a href="#cb26-2"></a>  <span class="fu">mutate</span>(<span class="at">pref =</span> <span class="fu">if_else</span>(</span>
+<span id="cb26-3"><a href="#cb26-3"></a>    autre_details <span class="sc">!=</span> <span class="st">"bleu ciel"</span> <span class="sc">|</span> <span class="fu">is.na</span>(autre_details), </span>
+<span id="cb26-4"><a href="#cb26-4"></a>    pref, </span>
+<span id="cb26-5"><a href="#cb26-5"></a>    <span class="fu">factor</span>(<span class="st">"bleu"</span>)</span>
+<span id="cb26-6"><a href="#cb26-6"></a>  ))</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 2
+  pref  autre_details
+  &lt;fct&gt; &lt;chr&gt;        
+1 bleu  &lt;NA&gt;         
+2 rouge &lt;NA&gt;         
+3 bleu  bleu ciel    
+4 rouge &lt;NA&gt;         
+5 autre jaune        </code></pre>
+</div>
+</div>
+<p>Bref, on peut s’en sortir avec <a href="https://dplyr.tidyverse.org/reference/if_else.html"><code>dplyr::if_else()</code></a> mais ce n’est pas forcément le plus pratique dans le cas présent. La syntaxe en base <strong>R</strong> fonctionne très bien, mais ne peut pas être intégrée à un enchaînement d’opérations utilisant le <em>pipe</em>.</p>
+<p>Dans ce genre de situation, on pourra être intéressé par la fonction <a href="https://larmarange.github.io/labelled/reference/recode_if.html"><code>labelled::recode_if()</code></a> disponible dans le package <a href="https://larmarange.github.io/labelled/">labelled</a>. Elle permet de ne modifier que certaines observations d’un vecteur en fonction d’une condition. Si la condition vaut <code>FALSE</code> ou <code>NA</code>, les observations concernées restent inchangées. Voyons comment cela s’écrit&nbsp;:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>df <span class="ot">&lt;-</span></span>
+<span id="cb28-2"><a href="#cb28-2"></a>  df <span class="sc">|&gt;</span> </span>
+<span id="cb28-3"><a href="#cb28-3"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb28-4"><a href="#cb28-4"></a>    <span class="at">pref =</span> pref <span class="sc">|&gt;</span> </span>
+<span id="cb28-5"><a href="#cb28-5"></a>      labelled<span class="sc">::</span><span class="fu">recode_if</span>(autre_details <span class="sc">==</span> <span class="st">"bleu ciel"</span>, <span class="st">"bleu"</span>)</span>
+<span id="cb28-6"><a href="#cb28-6"></a>  )</span>
+<span id="cb28-7"><a href="#cb28-7"></a>df</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 2
+  pref  autre_details
+  &lt;fct&gt; &lt;chr&gt;        
+1 bleu  &lt;NA&gt;         
+2 rouge &lt;NA&gt;         
+3 bleu  bleu ciel    
+4 rouge &lt;NA&gt;         
+5 autre jaune        </code></pre>
+</div>
+</div>
+<p>C’est tout de suite plus intuitif&nbsp;!</p>
 
 
 </section>
@@ -882,4 +1013,4 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/CzernaiFR/dplyr/blob/main/002_pipe.qmd" class="toc-action"><i class="bi bi-github"></i>Voir la source</a></li><li><a href="https://github.com/CzernaiFR/dplyr/issues/new" class="toc-action"><i class="bi empty"></i>Faire part d'un problème</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/CzernaiFR/dplyr/blob/main/010_combiner-variables.qmd" class="toc-action"><i class="bi bi-github"></i>Voir la source</a></li><li><a href="https://github.com/CzernaiFR/dplyr/issues/new" class="toc-action"><i class="bi empty"></i>Faire part d'un problème</a></li></ul></div></div></div></footer></body></html>

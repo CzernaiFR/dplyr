@@ -10,12 +10,17 @@ author:
 
 website:
   title: "R_Guide_notes"
+  reader-mode: true
+  repo-url: https://github.com/CzernaiFR/dplyr
+  repo-actions: [source, issue]
+  page-navigation: true
   navbar:
     left:
       - href: index.qmd
         text: Accueil
       - 002_pipe.qmd
       - 005_dplyr.qmd
+      - 010_combiner-variables.qmd
       
 
 format:
@@ -38,6 +43,7 @@ format:
       gutter-width: 1.0em
     fontsize: 1.1em
     reference-location: margin
+    page-navigation: true
 
 editor: source
 lang: fr-FR

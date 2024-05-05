@@ -181,10 +181,19 @@ window.Quarto = {
     <a class="nav-link active" href="./005_dplyr.html" aria-current="page"> 
 <span class="menu-text"><code>dplyr</code></span></a>
   </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./010_combiner-variables.html"> 
+<span class="menu-text">Combiner des variables</span></a>
+  </li>  
 </ul>
           </div> <!-- /navcollapse -->
           <div class="quarto-navbar-tools">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Basculer le mode sombre"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Basculer en mode lecteur">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
 </div>
       </div> <!-- /container-fluid -->
     </nav>
@@ -224,7 +233,7 @@ window.Quarto = {
   <li><a href="#cheatsheet" id="toc-cheatsheet" class="nav-link" data-scroll-target="#cheatsheet"><span class="header-section-number">4</span> Cheatsheet</a></li>
   <li><a href="#webin-r" id="toc-webin-r" class="nav-link" data-scroll-target="#webin-r"><span class="header-section-number">5</span> webin-R</a></li>
   </ul>
-</nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/CzernaiFR/dplyr/blob/main/005_dplyr.qmd" class="toc-action"><i class="bi bi-github"></i>Voir la source</a></li><li><a href="https://github.com/CzernaiFR/dplyr/issues/new" class="toc-action"><i class="bi empty"></i>Faire part d'un problème</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content page-columns page-full" id="quarto-document-content">
@@ -564,9 +573,9 @@ window.Quarto = {
 <pre><code># A tibble: 3 × 19
    year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
   &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
-1  2013     8     8      753            755        -2     1025           1009
-2  2013     3     4      600            605        -5      749            817
-3  2013     5    25     1857           1900        -3     2126           2159
+1  2013    11    11     1433           1425         8     1645           1653
+2  2013    11    13     1300           1245        15     1438           1435
+3  2013    10     5     1706           1715        -9     1847           1905
 # ℹ 11 more variables: arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;,
 #   tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;,
 #   hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
@@ -580,16 +589,16 @@ window.Quarto = {
 <pre><code># A tibble: 7,745 × 19
     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
- 1  2013     7    29     1452           1450         2     1631           1634
- 2  2013    11    11      849            850        -1     1116           1132
- 3  2013     9     3      655            659        -4      913           1000
- 4  2013     3    14      754            800        -6     1121           1116
- 5  2013    10     8     1019           1029       -10     1147           1214
- 6  2013     5    22      852            900        -8     1121           1126
- 7  2013     2    27     1449           1355        54     1719           1634
- 8  2013     2    19     1609           1600         9     1959           1930
- 9  2013    11     6     1755           1800        -5     1913           1919
-10  2013     5    10      741            744        -3     1025           1045
+ 1  2013     1     8      601            605        -4      801            805
+ 2  2013     5    28     1358           1359        -1     1555           1556
+ 3  2013     6    13     1015            959        16     1259           1207
+ 4  2013     1    25      837            835         2     1202           1150
+ 5  2013    12    15     1507           1510        -3     1834           1835
+ 6  2013     9    29     1616           1620        -4     1757           1828
+ 7  2013     2    21     1050           1029        21     1240           1235
+ 8  2013    12    14      706            710        -4      838            840
+ 9  2013    12    17      629            630        -1     1003            938
+10  2013     9    13     1342           1345        -3     1534           1544
 # ℹ 7,735 more rows
 # ℹ 11 more variables: arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;, flight &lt;int&gt;,
 #   tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;,
@@ -626,15 +635,15 @@ Important
 <div class="cell">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="fu">sample</span>(letters, <span class="dv">3</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "d" "u" "g"</code></pre>
+<pre><code>[1] "o" "h" "i"</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="fu">sample</span>(letters, <span class="dv">3</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "y" "g" "t"</code></pre>
+<pre><code>[1] "c" "l" "d"</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a><span class="fu">sample</span>(letters, <span class="dv">3</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "s" "y" "c"</code></pre>
+<pre><code>[1] "e" "p" "d"</code></pre>
 </div>
 </div>
 <p>À comparer à&nbsp;:</p>
@@ -2080,4 +2089,4 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 
 
 
-</body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/CzernaiFR/dplyr/blob/main/005_dplyr.qmd" class="toc-action"><i class="bi bi-github"></i>Voir la source</a></li><li><a href="https://github.com/CzernaiFR/dplyr/issues/new" class="toc-action"><i class="bi empty"></i>Faire part d'un problème</a></li></ul></div></div></div></footer></body></html>
